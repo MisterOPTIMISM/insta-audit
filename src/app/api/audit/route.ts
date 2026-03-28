@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { scrapeInstagramProfile } from "@/lib/instagram-scraper";
+import { InstagramProfile } from "@/lib/instagram-scraper";
 import { generateAuditAnalysis } from "@/lib/audit-generator";
 import { generateReportHtml } from "@/lib/report-template";
 
@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { instagramUrl } = body;
+    const { instagramUrl, manualData } = body;
 
     if (!instagramUrl) {
       return NextResponse.json(
@@ -62,8 +62,10 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Trigger async processing (don't await)
-    processAudit(audit.id, instagramUrl.trim(), handle).catch(console.error);
+    // Trigger async processing with manual data
+    processAudit(audit.id, instagramUrl.trim(), handle, manualData).catch(
+      console.error
+    );
 
     return NextResponse.json({ id: audit.id }, { status: 201 });
   } catch (error) {
@@ -87,36 +89,27 @@ export async function GET(request: NextRequest) {
     const id = searchParams.get("id");
     const userId = searchParams.get("userId");
 
-    // If userId param, return count for quota check
     if (userId) {
       if (userId !== session.user.id) {
         return NextResponse.json({ error: "Geen toegang." }, { status: 403 });
       }
-
       const count = await prisma.audit.count({
         where: { userId: session.user.id },
       });
-
       return NextResponse.json({ count });
     }
 
-    // If id param, return specific audit
     if (id) {
-      const audit = await prisma.audit.findUnique({
-        where: { id },
-      });
-
+      const audit = await prisma.audit.findUnique({ where: { id } });
       if (!audit) {
         return NextResponse.json(
           { error: "Audit niet gevonden." },
           { status: 404 }
         );
       }
-
       if (audit.userId !== session.user.id) {
         return NextResponse.json({ error: "Geen toegang." }, { status: 403 });
       }
-
       return NextResponse.json(audit);
     }
 
@@ -133,20 +126,81 @@ export async function GET(request: NextRequest) {
   }
 }
 
+interface ManualData {
+  posts: number;
+  followers: number;
+  following: number;
+  bio: string;
+  category: string;
+  highlights: string[];
+}
+
 async function processAudit(
   auditId: string,
   instagramUrl: string,
-  handle: string
+  handle: string,
+  manualData?: ManualData
 ) {
   try {
-    // Update status to PROCESSING
     await prisma.audit.update({
       where: { id: auditId },
       data: { status: "PROCESSING" },
     });
 
-    // Scrape profile
-    const profileData = await scrapeInstagramProfile(instagramUrl);
+    // Build profile from manual data (user input is the source of truth)
+    const profileData: InstagramProfile = {
+      handle,
+      name: handle,
+      bio: manualData?.bio || "",
+      postsCount: manualData?.posts || 0,
+      followers: manualData?.followers || 0,
+      following: manualData?.following || 0,
+      category: manualData?.category || "",
+      highlights: manualData?.highlights || [],
+      recentPosts: [],
+      profileUrl: instagramUrl,
+      isVerified: false,
+      hasProfilePic: true,
+    };
+
+    // Try to extract name from Instagram page title
+    try {
+      const res = await fetch(instagramUrl, {
+        headers: {
+          "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+          "Accept-Language": "en-US,en;q=0.9",
+        },
+      });
+      if (res.ok) {
+        let html = await res.text();
+        html = html.replace(/&#064;/g, "@");
+        const titleMatch = html.match(/<title>(.*?)<\/title>/);
+        if (titleMatch && titleMatch[1].includes("@")) {
+          const nameMatch = titleMatch[1].match(/^(.*?)\s*\(@/);
+          if (nameMatch) profileData.name = nameMatch[1].trim();
+        }
+        // Try to get bio from page if not provided manually
+        if (!profileData.bio) {
+          const bioMatch = html.match(/"biography":\s*"((?:[^"\\]|\\.)*)"/);
+          if (bioMatch) {
+            profileData.bio = bioMatch[1]
+              .replace(/\\n/g, "\n")
+              .replace(/\\"/g, '"');
+          }
+        }
+      }
+    } catch {
+      // Scraping is optional, manual data is primary
+    }
+
+    console.log("Processing audit with profile:", {
+      handle: profileData.handle,
+      name: profileData.name,
+      posts: profileData.postsCount,
+      followers: profileData.followers,
+      following: profileData.following,
+    });
 
     // Generate AI analysis
     const analysis = await generateAuditAnalysis(profileData);
@@ -154,7 +208,6 @@ async function processAudit(
     // Generate HTML report
     const reportHtml = generateReportHtml(analysis, profileData);
 
-    // Update audit with results
     await prisma.audit.update({
       where: { id: auditId },
       data: {

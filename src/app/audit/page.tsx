@@ -8,6 +8,12 @@ export default function AuditPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [url, setUrl] = useState("");
+  const [posts, setPosts] = useState("");
+  const [followers, setFollowers] = useState("");
+  const [following, setFollowing] = useState("");
+  const [bio, setBio] = useState("");
+  const [category, setCategory] = useState("");
+  const [highlights, setHighlights] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [auditsUsed, setAuditsUsed] = useState<number | null>(null);
@@ -60,7 +66,20 @@ export default function AuditPage() {
       const res = await fetch("/api/audit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ instagramUrl: url.trim() }),
+        body: JSON.stringify({
+          instagramUrl: url.trim(),
+          manualData: {
+            posts: parseInt(posts) || 0,
+            followers: parseInt(followers) || 0,
+            following: parseInt(following) || 0,
+            bio: bio.trim(),
+            category: category.trim(),
+            highlights: highlights
+              .split(",")
+              .map((h) => h.trim())
+              .filter(Boolean),
+          },
+        }),
       });
 
       const data = await res.json();
@@ -102,10 +121,13 @@ export default function AuditPage() {
             Start je Instagram Audit
           </h1>
           <p className="mt-2 text-gray-500">
-            Voer de Instagram URL in die je wilt analyseren.
+            Vul de gegevens van het Instagram profiel in.
           </p>
           {auditsUsed !== null && (
-            <p className="mt-1 text-sm" style={{ color: auditsUsed >= 1 ? "#ef4444" : "#22c55e" }}>
+            <p
+              className="mt-1 text-sm"
+              style={{ color: auditsUsed >= 1 ? "#ef4444" : "#22c55e" }}
+            >
               {auditsUsed >= 1
                 ? "Je gratis audit is gebruikt"
                 : "Je hebt nog 1 gratis audit"}
@@ -121,13 +143,14 @@ export default function AuditPage() {
               </div>
             )}
 
+            {/* Instagram URL */}
             <div>
               <label
                 htmlFor="instagram-url"
-                className="block text-sm font-medium mb-2"
+                className="block text-sm font-medium mb-1"
                 style={{ color: "#1a2b3f" }}
               >
-                Instagram Profiel URL
+                Instagram Profiel URL *
               </label>
               <input
                 id="instagram-url"
@@ -136,11 +159,132 @@ export default function AuditPage() {
                 onChange={(e) => setUrl(e.target.value)}
                 placeholder="https://www.instagram.com/gebruikersnaam"
                 required
-                className="text-base"
               />
-              <p className="mt-1.5 text-xs text-gray-400">
-                Plak de volledige URL van het Instagram profiel
-              </p>
+            </div>
+
+            {/* Stats row */}
+            <div className="grid grid-cols-3 gap-3">
+              <div>
+                <label
+                  htmlFor="posts"
+                  className="block text-sm font-medium mb-1"
+                  style={{ color: "#1a2b3f" }}
+                >
+                  Posts *
+                </label>
+                <input
+                  id="posts"
+                  type="number"
+                  value={posts}
+                  onChange={(e) => setPosts(e.target.value)}
+                  placeholder="bijv. 85"
+                  required
+                  min="0"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="followers"
+                  className="block text-sm font-medium mb-1"
+                  style={{ color: "#1a2b3f" }}
+                >
+                  Volgers *
+                </label>
+                <input
+                  id="followers"
+                  type="number"
+                  value={followers}
+                  onChange={(e) => setFollowers(e.target.value)}
+                  placeholder="bijv. 1200"
+                  required
+                  min="0"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="following"
+                  className="block text-sm font-medium mb-1"
+                  style={{ color: "#1a2b3f" }}
+                >
+                  Volgend *
+                </label>
+                <input
+                  id="following"
+                  type="number"
+                  value={following}
+                  onChange={(e) => setFollowing(e.target.value)}
+                  placeholder="bijv. 350"
+                  required
+                  min="0"
+                />
+              </div>
+            </div>
+
+            {/* Bio */}
+            <div>
+              <label
+                htmlFor="bio"
+                className="block text-sm font-medium mb-1"
+                style={{ color: "#1a2b3f" }}
+              >
+                Bio tekst
+              </label>
+              <textarea
+                id="bio"
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+                placeholder="Kopieer hier je Instagram bio..."
+                rows={3}
+                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 text-sm resize-none"
+              />
+            </div>
+
+            {/* Category & Highlights */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label
+                  htmlFor="category"
+                  className="block text-sm font-medium mb-1"
+                  style={{ color: "#1a2b3f" }}
+                >
+                  Categorie
+                </label>
+                <input
+                  id="category"
+                  type="text"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  placeholder="bijv. Kinesitherapie"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="highlights"
+                  className="block text-sm font-medium mb-1"
+                  style={{ color: "#1a2b3f" }}
+                >
+                  Highlights
+                </label>
+                <input
+                  id="highlights"
+                  type="text"
+                  value={highlights}
+                  onChange={(e) => setHighlights(e.target.value)}
+                  placeholder="Team, Reviews, Tips"
+                />
+                <p className="text-xs text-gray-400 mt-0.5">
+                  Gescheiden door komma&apos;s
+                </p>
+              </div>
+            </div>
+
+            <div
+              className="p-3 rounded-lg text-sm text-gray-500"
+              style={{ backgroundColor: "rgba(74, 127, 232, 0.05)" }}
+            >
+              <strong style={{ color: "#4A7FE8" }}>Tip:</strong> Je vindt deze
+              gegevens bovenaan je Instagram profiel. Hoe meer je invult, hoe
+              beter de analyse!
             </div>
 
             <button
@@ -156,36 +300,14 @@ export default function AuditPage() {
             >
               {loading ? (
                 <span className="flex items-center gap-2">
-                  <span
-                    className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"
-                  ></span>
+                  <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
                   Bezig met analyseren...
                 </span>
               ) : (
-                "Analyseer dit profiel"
+                "Analyseer dit profiel →"
               )}
             </button>
           </form>
-
-          <div className="mt-6 p-4 rounded-lg" style={{ backgroundColor: "rgba(74, 127, 232, 0.05)" }}>
-            <h3 className="text-sm font-semibold mb-2" style={{ color: "#4A7FE8" }}>
-              Wat wordt er geanalyseerd?
-            </h3>
-            <ul className="text-sm text-gray-500 space-y-1">
-              <li className="flex items-center gap-2">
-                <span style={{ color: "#22c55e" }}>&#10003;</span> Profielgegevens & bio
-              </li>
-              <li className="flex items-center gap-2">
-                <span style={{ color: "#22c55e" }}>&#10003;</span> Volgers/volgend ratio
-              </li>
-              <li className="flex items-center gap-2">
-                <span style={{ color: "#22c55e" }}>&#10003;</span> Recente posts & content
-              </li>
-              <li className="flex items-center gap-2">
-                <span style={{ color: "#22c55e" }}>&#10003;</span> Highlights & categorie
-              </li>
-            </ul>
-          </div>
         </div>
       </div>
     </div>
