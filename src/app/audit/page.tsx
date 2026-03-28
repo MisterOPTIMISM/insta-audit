@@ -14,6 +14,10 @@ export default function AuditPage() {
   const [bio, setBio] = useState("");
   const [category, setCategory] = useState("");
   const [highlights, setHighlights] = useState("");
+  const [contentStyle, setContentStyle] = useState("");
+  const [targetAudience, setTargetAudience] = useState("");
+  const [postFrequency, setPostFrequency] = useState("");
+  const [usesReels, setUsesReels] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [auditsUsed, setAuditsUsed] = useState<number | null>(null);
@@ -78,6 +82,10 @@ export default function AuditPage() {
               .split(",")
               .map((h) => h.trim())
               .filter(Boolean),
+            contentStyle: contentStyle.trim(),
+            targetAudience: targetAudience.trim(),
+            postFrequency,
+            usesReels,
           },
         }),
       });
@@ -278,6 +286,90 @@ export default function AuditPage() {
               </div>
             </div>
 
+            {/* Content Style */}
+            <div>
+              <label
+                htmlFor="content-style"
+                className="block text-sm font-medium mb-1"
+                style={{ color: "#1a2b3f" }}
+              >
+                Beschrijf je content stijl
+              </label>
+              <textarea
+                id="content-style"
+                value={contentStyle}
+                onChange={(e) => setContentStyle(e.target.value)}
+                placeholder="bijv. Mix van productfoto's, reels, behind-the-scenes"
+                rows={2}
+                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 text-sm resize-none"
+              />
+            </div>
+
+            {/* Target Audience */}
+            <div>
+              <label
+                htmlFor="target-audience"
+                className="block text-sm font-medium mb-1"
+                style={{ color: "#1a2b3f" }}
+              >
+                Wat is je doelgroep?
+              </label>
+              <input
+                id="target-audience"
+                type="text"
+                value={targetAudience}
+                onChange={(e) => setTargetAudience(e.target.value)}
+                placeholder="bijv. Lokale klanten in Berlare"
+              />
+            </div>
+
+            {/* Post Frequency & Reels */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label
+                  htmlFor="post-frequency"
+                  className="block text-sm font-medium mb-1"
+                  style={{ color: "#1a2b3f" }}
+                >
+                  Hoe vaak post je?
+                </label>
+                <select
+                  id="post-frequency"
+                  value={postFrequency}
+                  onChange={(e) => setPostFrequency(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 text-sm bg-white"
+                >
+                  <option value="">-- Kies --</option>
+                  <option value="Dagelijks">Dagelijks</option>
+                  <option value="3-5x per week">3-5x per week</option>
+                  <option value="1-2x per week">1-2x per week</option>
+                  <option value="Minder dan 1x per week">Minder dan 1x per week</option>
+                  <option value="Weet ik niet">Weet ik niet</option>
+                </select>
+              </div>
+              <div>
+                <label
+                  htmlFor="uses-reels"
+                  className="block text-sm font-medium mb-1"
+                  style={{ color: "#1a2b3f" }}
+                >
+                  Gebruik je Reels?
+                </label>
+                <select
+                  id="uses-reels"
+                  value={usesReels}
+                  onChange={(e) => setUsesReels(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 text-sm bg-white"
+                >
+                  <option value="">-- Kies --</option>
+                  <option value="Ja, regelmatig">Ja, regelmatig</option>
+                  <option value="Soms">Soms</option>
+                  <option value="Nee">Nee</option>
+                  <option value="Weet ik niet">Weet ik niet</option>
+                </select>
+              </div>
+            </div>
+
             <div
               className="p-3 rounded-lg text-sm text-gray-500"
               style={{ backgroundColor: "rgba(74, 127, 232, 0.05)" }}
@@ -304,7 +396,7 @@ export default function AuditPage() {
                   Bezig met analyseren...
                 </span>
               ) : (
-                "Analyseer dit profiel →"
+                "Analyseer dit profiel \u2192"
               )}
             </button>
           </form>

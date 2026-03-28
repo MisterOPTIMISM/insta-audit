@@ -133,6 +133,10 @@ interface ManualData {
   bio: string;
   category: string;
   highlights: string[];
+  contentStyle: string;
+  targetAudience: string;
+  postFrequency: string;
+  usesReels: string;
 }
 
 async function processAudit(
@@ -161,6 +165,10 @@ async function processAudit(
       profileUrl: instagramUrl,
       isVerified: false,
       hasProfilePic: true,
+      contentStyle: manualData?.contentStyle || "",
+      targetAudience: manualData?.targetAudience || "",
+      postFrequency: manualData?.postFrequency || "",
+      usesReels: manualData?.usesReels || "",
     };
 
     // Try to extract name from Instagram page title
@@ -200,6 +208,10 @@ async function processAudit(
       posts: profileData.postsCount,
       followers: profileData.followers,
       following: profileData.following,
+      contentStyle: profileData.contentStyle,
+      targetAudience: profileData.targetAudience,
+      postFrequency: profileData.postFrequency,
+      usesReels: profileData.usesReels,
     });
 
     // Generate AI analysis

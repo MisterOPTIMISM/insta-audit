@@ -11,6 +11,10 @@ export interface InstagramProfile {
   profileUrl: string;
   isVerified: boolean;
   hasProfilePic: boolean;
+  contentStyle: string;
+  targetAudience: string;
+  postFrequency: string;
+  usesReels: string;
 }
 
 function parseCount(text: string): number {
@@ -189,6 +193,10 @@ export async function scrapeInstagramProfile(
       profileUrl,
       isVerified,
       hasProfilePic,
+      contentStyle: "",
+      targetAudience: "",
+      postFrequency: "",
+      usesReels: "",
     };
 
     console.log("Scraped profile:", JSON.stringify({
@@ -223,5 +231,9 @@ function createEmptyProfile(handle: string, profileUrl: string): InstagramProfil
     profileUrl,
     isVerified: false,
     hasProfilePic: false,
+    contentStyle: "",
+    targetAudience: "",
+    postFrequency: "",
+    usesReels: "",
   };
 }
