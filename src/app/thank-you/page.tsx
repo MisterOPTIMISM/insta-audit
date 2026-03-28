@@ -57,7 +57,7 @@ export default function ThankYouPage() {
             een volledige analyse met score, tips en actieplan.
           </p>
           <a
-            href="https://www.hansdemeyer.be/shop"
+            href="https://www.hansdemeyer.be/product/instagram-audit-instaaudit-by-hans-demeyer/"
             target="_blank"
             rel="noopener noreferrer"
             className="btn-primary"

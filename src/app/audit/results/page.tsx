@@ -224,7 +224,7 @@ function ResultsContent() {
             </p>
             <div style={{ display: "flex", gap: "0.75rem", justifyContent: "center", flexWrap: "wrap" }}>
               <a
-                href="https://www.hansdemeyer.be/shop"
+                href="https://www.hansdemeyer.be/product/instagram-audit-instaaudit-by-hans-demeyer/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-primary"

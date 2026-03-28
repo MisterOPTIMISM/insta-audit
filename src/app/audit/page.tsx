@@ -148,7 +148,7 @@ export default function AuditPage() {
                 Wil je nog een profiel analyseren? Koop extra audits in de shop.
               </p>
               <a
-                href="https://www.hansdemeyer.be/shop"
+                href="https://www.hansdemeyer.be/product/instagram-audit-instaaudit-by-hans-demeyer/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-primary text-sm"
