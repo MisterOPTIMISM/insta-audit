@@ -3,151 +3,184 @@ import Link from "next/link";
 export default function Home() {
   return (
     <div>
-      {/* Hero Section */}
+      {/* Hero */}
       <section className="gradient-bg text-white">
-        <div className="max-w-5xl mx-auto px-6 py-24 md:py-32 text-center">
-          <p className="text-sm uppercase tracking-widest text-blue-200 mb-4">
+        <div
+          style={{
+            maxWidth: "720px",
+            margin: "0 auto",
+            padding: "5rem 1.5rem 4.5rem",
+            textAlign: "center",
+          }}
+        >
+          <p
+            style={{
+              fontSize: "0.75rem",
+              letterSpacing: "0.15em",
+              textTransform: "uppercase",
+              color: "rgba(255,255,255,0.6)",
+              marginBottom: "1.25rem",
+            }}
+          >
             AI-Powered Instagram Analyse
           </p>
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight tracking-tight">
-            Ontdek hoe goed jouw
-            <br />
-            Instagram{" "}
+          <h1
+            style={{
+              fontSize: "clamp(2rem, 5vw, 3.25rem)",
+              fontWeight: 800,
+              lineHeight: 1.15,
+              marginBottom: "1.5rem",
+            }}
+          >
+            Ontdek hoe goed jouw Instagram{" "}
             <span style={{ color: "#E8724A" }}>echt</span> presteert
           </h1>
-          <p className="text-lg md:text-xl text-blue-100 mb-10 max-w-2xl mx-auto leading-relaxed">
+          <p
+            style={{
+              fontSize: "1.125rem",
+              lineHeight: 1.6,
+              color: "rgba(255,255,255,0.75)",
+              marginBottom: "2.5rem",
+              maxWidth: "540px",
+              marginLeft: "auto",
+              marginRight: "auto",
+            }}
+          >
             Krijg een professionele audit met concrete tips om je bereik,
             engagement en volgers te laten groeien.
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link
-              href="/login"
-              className="btn-primary text-lg px-10 py-4"
-            >
-              Start je gratis audit &rarr;
-            </Link>
-          </div>
-          <p className="mt-5 text-sm text-blue-200/70">
+          <Link href="/login" className="btn-primary" style={{ fontSize: "1.0625rem", padding: "0.875rem 2.5rem" }}>
+            Start je gratis audit &rarr;
+          </Link>
+          <p
+            style={{
+              marginTop: "1rem",
+              fontSize: "0.8125rem",
+              color: "rgba(255,255,255,0.45)",
+            }}
+          >
             Geen creditcard nodig &bull; Resultaat binnen 2 minuten
           </p>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-24 px-6">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-16">
+      {/* Features */}
+      <section style={{ padding: "5rem 1.5rem" }}>
+        <div style={{ maxWidth: "960px", margin: "0 auto" }}>
+          <div style={{ textAlign: "center", marginBottom: "3.5rem" }}>
             <h2
-              className="text-3xl md:text-4xl font-bold mb-4"
-              style={{ color: "#1a2b3f" }}
+              style={{
+                fontSize: "1.75rem",
+                fontWeight: 700,
+                color: "#1a2b3f",
+                marginBottom: "0.75rem",
+              }}
             >
               Wat je krijgt
             </h2>
-            <p className="text-gray-500 max-w-lg mx-auto">
-              Een complete doorlichting van je Instagram profiel, aangedreven
-              door kunstmatige intelligentie.
+            <p style={{ color: "#6b7280", maxWidth: "420px", margin: "0 auto", fontSize: "0.9375rem" }}>
+              Een complete doorlichting van je profiel, aangedreven door AI.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+              gap: "1.5rem",
+            }}
+          >
             <FeatureCard
-              icon={
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                />
-              }
-              iconColor="#E8724A"
+              emoji="&#128100;"
               title="Profiel Analyse"
-              description="Bio, profielfoto, highlights en algemene indruk worden grondig beoordeeld."
+              text="Bio, profielfoto, highlights en algemene indruk worden grondig beoordeeld."
+              color="#E8724A"
             />
             <FeatureCard
-              icon={
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                />
-              }
-              iconColor="#4A7FE8"
+              emoji="&#128248;"
               title="Content Review"
-              description="Je recente posts worden geanalyseerd op kwaliteit, consistentie en engagement."
+              text="Je recente posts geanalyseerd op kwaliteit, consistentie en engagement."
+              color="#4A7FE8"
             />
             <FeatureCard
-              icon={
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
-                />
-              }
-              iconColor="#E8724A"
+              emoji="&#9989;"
               title="Concrete Tips"
-              description="Ontvang een gepersonaliseerd actieplan met stappen die je meteen kunt toepassen."
+              text="Een gepersonaliseerd actieplan met stappen die je meteen kunt toepassen."
+              color="#E8724A"
             />
           </div>
         </div>
       </section>
 
+      {/* Divider */}
+      <div style={{ maxWidth: "960px", margin: "0 auto", padding: "0 1.5rem" }}>
+        <hr style={{ border: "none", borderTop: "1px solid #e5e7eb" }} />
+      </div>
+
       {/* How It Works */}
-      <section className="py-24 px-6" style={{ backgroundColor: "#ffffff" }}>
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-16">
+      <section style={{ padding: "5rem 1.5rem" }}>
+        <div style={{ maxWidth: "780px", margin: "0 auto" }}>
+          <div style={{ textAlign: "center", marginBottom: "3.5rem" }}>
             <h2
-              className="text-3xl md:text-4xl font-bold mb-4"
-              style={{ color: "#1a2b3f" }}
+              style={{
+                fontSize: "1.75rem",
+                fontWeight: 700,
+                color: "#1a2b3f",
+                marginBottom: "0.75rem",
+              }}
             >
               Hoe werkt het?
             </h2>
-            <p className="text-gray-500">In drie simpele stappen.</p>
+            <p style={{ color: "#6b7280", fontSize: "0.9375rem" }}>
+              In drie simpele stappen.
+            </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-12">
-            <StepCard
-              number="1"
-              color="#E8724A"
-              title="Maak een account"
-              description="Log in met Google of maak snel een account aan met je e-mailadres."
-            />
-            <StepCard
-              number="2"
-              color="#4A7FE8"
-              title="Vul je gegevens in"
-              description="Voer je Instagram URL en profielgegevens in. Hoe meer data, hoe beter de analyse."
-            />
-            <StepCard
-              number="3"
-              color="#E8724A"
-              title="Ontvang je rapport"
-              description="Binnen 2 minuten krijg je een uitgebreid rapport met score, tips en actieplan."
-            />
+          <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
+            <StepRow number="1" color="#E8724A" title="Maak een account" text="Log in met Google of maak een account aan met je e-mail. Kost 30 seconden." />
+            <StepRow number="2" color="#4A7FE8" title="Vul je profielgegevens in" text="Voer je Instagram URL in samen met je aantal posts, volgers en volgend. Hoe meer info, hoe beter de analyse." />
+            <StepRow number="3" color="#E8724A" title="Ontvang je rapport" text="Binnen 2 minuten krijg je een uitgebreid rapport met score, sterke punten, verbeterpunten en een concreet actieplan." />
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-24 px-6">
+      {/* CTA */}
+      <section style={{ padding: "2rem 1.5rem 5rem" }}>
         <div
-          className="max-w-3xl mx-auto text-center rounded-2xl py-16 px-8"
           style={{
+            maxWidth: "720px",
+            margin: "0 auto",
             background: "linear-gradient(135deg, #1a2b3f 0%, #2d4a6f 100%)",
+            borderRadius: "1rem",
+            padding: "3.5rem 2.5rem",
+            textAlign: "center",
           }}
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+          <h2
+            style={{
+              fontSize: "1.75rem",
+              fontWeight: 700,
+              color: "#ffffff",
+              marginBottom: "0.75rem",
+            }}
+          >
             Klaar om te beginnen?
           </h2>
-          <p className="text-blue-200 mb-8 max-w-md mx-auto">
+          <p
+            style={{
+              color: "rgba(255,255,255,0.65)",
+              marginBottom: "2rem",
+              maxWidth: "400px",
+              marginLeft: "auto",
+              marginRight: "auto",
+              fontSize: "0.9375rem",
+              lineHeight: 1.6,
+            }}
+          >
             Je eerste audit is helemaal gratis. Ontdek vandaag nog hoe je jouw
             Instagram naar het volgende niveau tilt.
           </p>
-          <Link
-            href="/login"
-            className="btn-primary text-lg px-10 py-4"
-          >
+          <Link href="/login" className="btn-primary" style={{ fontSize: "1.0625rem", padding: "0.875rem 2.5rem" }}>
             Start je gratis audit &rarr;
           </Link>
         </div>
@@ -157,68 +190,104 @@ export default function Home() {
 }
 
 function FeatureCard({
-  icon,
-  iconColor,
+  emoji,
   title,
-  description,
+  text,
+  color,
 }: {
-  icon: React.ReactNode;
-  iconColor: string;
+  emoji: string;
   title: string;
-  description: string;
+  text: string;
+  color: string;
 }) {
   return (
-    <div className="card text-center p-8">
+    <div
+      style={{
+        background: "#ffffff",
+        borderRadius: "0.75rem",
+        padding: "2rem",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+        border: "1px solid #f0f0f0",
+        textAlign: "center",
+      }}
+    >
       <div
-        className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5"
-        style={{ backgroundColor: `${iconColor}10` }}
-      >
-        <svg
-          className="w-7 h-7"
-          fill="none"
-          stroke={iconColor}
-          viewBox="0 0 24 24"
-        >
-          {icon}
-        </svg>
-      </div>
+        style={{
+          width: "3rem",
+          height: "3rem",
+          borderRadius: "0.75rem",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          margin: "0 auto 1.25rem",
+          backgroundColor: `${color}12`,
+          fontSize: "1.25rem",
+        }}
+        dangerouslySetInnerHTML={{ __html: emoji }}
+      />
       <h3
-        className="text-lg font-semibold mb-2"
-        style={{ color: "#1a2b3f" }}
+        style={{
+          fontSize: "1.0625rem",
+          fontWeight: 600,
+          color: "#1a2b3f",
+          marginBottom: "0.5rem",
+        }}
       >
         {title}
       </h3>
-      <p className="text-gray-500 text-sm leading-relaxed">{description}</p>
+      <p style={{ color: "#6b7280", fontSize: "0.875rem", lineHeight: 1.6 }}>
+        {text}
+      </p>
     </div>
   );
 }
 
-function StepCard({
+function StepRow({
   number,
   color,
   title,
-  description,
+  text,
 }: {
   number: string;
   color: string;
   title: string;
-  description: string;
+  text: string;
 }) {
   return (
-    <div className="text-center">
+    <div style={{ display: "flex", gap: "1.25rem", alignItems: "flex-start" }}>
       <div
-        className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-white font-bold text-lg"
-        style={{ backgroundColor: color }}
+        style={{
+          width: "2.5rem",
+          height: "2.5rem",
+          minWidth: "2.5rem",
+          borderRadius: "50%",
+          backgroundColor: color,
+          color: "#fff",
+          fontWeight: 700,
+          fontSize: "1rem",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          marginTop: "0.125rem",
+        }}
       >
         {number}
       </div>
-      <h3
-        className="text-lg font-semibold mb-2"
-        style={{ color: "#1a2b3f" }}
-      >
-        {title}
-      </h3>
-      <p className="text-gray-500 text-sm leading-relaxed">{description}</p>
+      <div>
+        <h3
+          style={{
+            fontSize: "1.0625rem",
+            fontWeight: 600,
+            color: "#1a2b3f",
+            marginBottom: "0.25rem",
+          }}
+        >
+          {title}
+        </h3>
+        <p style={{ color: "#6b7280", fontSize: "0.875rem", lineHeight: 1.6 }}>
+          {text}
+        </p>
+      </div>
     </div>
   );
 }
