@@ -406,7 +406,7 @@ export default function AuditPage() {
               className="btn-primary w-full justify-center text-base py-3"
               style={{
                 opacity:
-                  loading || (auditsUsed !== null && auditsUsed >= 1)
+                  loading || (credits !== null && credits <= 0)
                     ? 0.6
                     : 1,
               }}
