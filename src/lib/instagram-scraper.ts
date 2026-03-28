@@ -1,6 +1,3 @@
-import puppeteer from "puppeteer-core";
-import chromium from "chromium";
-
 export interface InstagramProfile {
   handle: string;
   name: string;
@@ -18,7 +15,7 @@ export interface InstagramProfile {
 
 function parseCount(text: string): number {
   if (!text) return 0;
-  const cleaned = text.trim().toLowerCase().replace(/,/g, "");
+  const cleaned = text.trim().toLowerCase().replace(/,/g, "").replace(/\./g, "");
   if (cleaned.endsWith("k")) {
     return Math.round(parseFloat(cleaned.replace("k", "")) * 1000);
   }
@@ -32,162 +29,199 @@ export async function scrapeInstagramProfile(
   url: string
 ): Promise<InstagramProfile> {
   const handle = url.replace(/\/$/, "").split("/").pop() || "";
+  const profileUrl = `https://www.instagram.com/${handle}/`;
 
-  let browser;
   try {
-    browser = await puppeteer.launch({
-      executablePath: chromium.path,
-      headless: true,
-      args: [
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
-        "--disable-gpu",
-        "--disable-extensions",
-        "--single-process",
-      ],
+    // Fetch the Instagram page HTML with a browser-like user agent
+    const response = await fetch(profileUrl, {
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9,nl;q=0.8",
+        "Cache-Control": "no-cache",
+      },
+      redirect: "follow",
     });
 
-    const page = await browser.newPage();
-
-    // Set a realistic user agent
-    await page.setUserAgent(
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-    );
-
-    await page.setViewport({ width: 1280, height: 900 });
-
-    // Navigate to profile
-    await page.goto(url, { waitUntil: "networkidle2", timeout: 30000 });
-
-    // Handle cookie/login popups
-    try {
-      const declineButton = await page.$(
-        'button[class*="decline"], button:has-text("Decline"), button:has-text("Not Now"), button:has-text("Niet nu")'
-      );
-      if (declineButton) await declineButton.click();
-    } catch {
-      // Popup might not appear
+    if (!response.ok) {
+      console.error(`Instagram fetch failed: ${response.status}`);
+      return createEmptyProfile(handle, profileUrl);
     }
 
-    // Wait for content to load
-    await page.waitForSelector("header", { timeout: 10000 }).catch(() => {});
+    let html = await response.text();
+    // Decode common HTML entities
+    html = html.replace(/&#064;/g, "@").replace(/&amp;/g, "&").replace(/&#x27;/g, "'").replace(/&quot;/g, '"');
 
-    // Extract profile data
-    const profileData = await page.evaluate(() => {
-      const getText = (selector: string): string => {
-        const el = document.querySelector(selector);
-        return el?.textContent?.trim() || "";
-      };
+    // Extract data from the page title
+    // Format: "Name (@handle) • Instagram photos and videos"
+    const titleMatch = html.match(/<title>(.*?)<\/title>/);
+    const title = titleMatch ? titleMatch[1] : "";
+    let name = handle;
+    if (title && title.includes("@")) {
+      const nameMatch = title.match(/^(.*?)\s*\(@/);
+      if (nameMatch) name = nameMatch[1].trim();
+    }
 
-      // Try to get name
-      let name = "";
-      const headerSection = document.querySelector("header");
-      if (headerSection) {
-        const nameEl = headerSection.querySelector("span[class*='html-span']");
-        if (nameEl) name = nameEl.textContent?.trim() || "";
+    // Extract from meta tags (Instagram uses various formats)
+    const descriptionMatch = html.match(
+      /<meta\s+(?:name|property)="(?:description|og:description)"\s+content="(.*?)"/
+    ) || html.match(
+      /content="(.*?)"\s+(?:name|property)="(?:description|og:description)"/
+    ) || html.match(
+      /property="og:description"\s*[^>]*content="(.*?)"/
+    ) || html.match(
+      /content="(\d+\s*Followers.*?)"/i
+    );
+    const description = descriptionMatch ? descriptionMatch[1] : "";
+
+    // Parse description: "X Followers, Y Following, Z Posts - Bio text"
+    let postsCount = 0;
+    let followers = 0;
+    let following = 0;
+    let bio = "";
+
+    if (description) {
+      // Try format: "1,234 Followers, 567 Following, 89 Posts - See Instagram..."
+      const followersMatch = description.match(/([\d,.]+[kKmM]?)\s*Followers/i);
+      const followingMatch = description.match(/([\d,.]+[kKmM]?)\s*Following/i);
+      const postsMatch = description.match(/([\d,.]+[kKmM]?)\s*Posts/i);
+
+      if (followersMatch) followers = parseCount(followersMatch[1]);
+      if (followingMatch) following = parseCount(followingMatch[1]);
+      if (postsMatch) postsCount = parseCount(postsMatch[1]);
+
+      // Extract bio (after the stats part)
+      const bioMatch = description.match(/Posts?\s*[-–—]\s*(.*)/i);
+      if (bioMatch) {
+        bio = bioMatch[1]
+          .replace(/See Instagram photos and videos.*$/i, "")
+          .replace(/on Instagram:.*$/i, "")
+          .trim();
       }
+    }
 
-      // Bio
-      let bio = "";
-      const bioEl = document.querySelector('div[class*="QGPIr"], header section > div > span, header div > span:not([class*="count"])');
-      if (bioEl) bio = bioEl.textContent?.trim() || "";
+    // Try to extract stats from the HTML body (accessible text)
+    if (followers === 0) {
+      // Try: "1,234 followers" in various formats in the HTML
+      const htmlFollowers = html.match(/"edge_followed_by":\s*{\s*"count":\s*(\d+)/);
+      const htmlFollowing = html.match(/"edge_follow":\s*{\s*"count":\s*(\d+)/);
+      const htmlPosts = html.match(/"edge_owner_to_timeline_media":\s*{\s*"count":\s*(\d+)/);
 
-      // Stats (posts, followers, following)
-      const statElements = document.querySelectorAll(
-        'header section ul li span, header section ul li a span'
-      );
-      const stats: string[] = [];
-      statElements.forEach((el) => {
-        const text = el.getAttribute("title") || el.textContent || "";
-        if (text) stats.push(text.trim());
-      });
+      if (htmlFollowers) followers = parseInt(htmlFollowers[1], 10);
+      if (htmlFollowing) following = parseInt(htmlFollowing[1], 10);
+      if (htmlPosts) postsCount = parseInt(htmlPosts[1], 10);
+    }
 
-      // Category
-      let category = "";
-      const categoryEl = document.querySelector(
-        'div[class*="category"], header div[class*="html-div"] a[class*="category"]'
-      );
-      if (categoryEl) category = categoryEl.textContent?.trim() || "";
+    // Try extracting from accessible link text: "1,234 posts" "567 followers" "89 following"
+    if (followers === 0) {
+      const postsLinkMatch = html.match(/"([\d,]+)\s*posts?"/i);
+      const followersLinkMatch = html.match(/"([\d,]+)\s*followers?"/i);
+      const followingLinkMatch = html.match(/"([\d,]+)\s*following"/i);
 
-      // Highlights
-      const highlights: string[] = [];
-      document.querySelectorAll('div[class*="highlight"] span, canvas + div span').forEach((el) => {
-        const text = el.textContent?.trim();
-        if (text && text.length < 50) highlights.push(text);
-      });
+      if (postsLinkMatch) postsCount = parseCount(postsLinkMatch[1]);
+      if (followersLinkMatch) followers = parseCount(followersLinkMatch[1]);
+      if (followingLinkMatch) following = parseCount(followingLinkMatch[1]);
+    }
 
-      // Recent posts (from img alt text)
-      const recentPosts: string[] = [];
-      document.querySelectorAll("article img, main img[alt]").forEach((img) => {
-        const alt = img.getAttribute("alt");
-        if (alt && alt.length > 10) {
-          recentPosts.push(alt);
+    // Extract bio from JSON in the page if available
+    if (!bio) {
+      const biographyMatch = html.match(/"biography":\s*"((?:[^"\\]|\\.)*)"/);
+      if (biographyMatch) {
+        bio = biographyMatch[1]
+          .replace(/\\n/g, "\n")
+          .replace(/\\"/g, '"')
+          .replace(/\\\\/g, "\\");
+      }
+    }
+
+    // Extract category
+    let category = "";
+    const categoryMatch = html.match(/"category_name":\s*"(.*?)"/);
+    if (categoryMatch) category = categoryMatch[1];
+
+    // Extract recent posts from alt text in the HTML
+    const recentPosts: string[] = [];
+    const altMatches = html.matchAll(/alt="((?:Photo|Video|Reel|Clip).*?)"/gi);
+    for (const match of altMatches) {
+      if (match[1].length > 10) {
+        recentPosts.push(match[1]);
+        if (recentPosts.length >= 12) break;
+      }
+    }
+
+    // Also try to find posts from link descriptions
+    if (recentPosts.length === 0) {
+      const postAltMatches = html.matchAll(/alt="(.*?(?:May be|Photo by|Video by).*?)"/gi);
+      for (const match of postAltMatches) {
+        if (match[1].length > 10) {
+          recentPosts.push(match[1]);
+          if (recentPosts.length >= 12) break;
         }
-      });
+      }
+    }
 
-      // Verified badge
-      const isVerified = !!document.querySelector(
-        'span[title="Verified"], svg[aria-label="Verified"]'
-      );
+    // Extract highlights
+    const highlights: string[] = [];
+    const highlightMatches = html.matchAll(/View\s+(.*?)\s+highlight/gi);
+    for (const match of highlightMatches) {
+      if (match[1].length < 50) {
+        highlights.push(match[1]);
+      }
+    }
 
-      // Profile picture
-      const hasProfilePic = !!document.querySelector(
-        'header img[alt*="profile"], header img[data-testid="user-avatar"]'
-      );
+    // Check verification
+    const isVerified = html.includes('"is_verified":true') || html.includes('Verified');
 
-      return {
-        name,
-        bio,
-        stats,
-        category,
-        highlights: highlights.slice(0, 10),
-        recentPosts: recentPosts.slice(0, 12),
-        isVerified,
-        hasProfilePic,
-      };
-    });
+    // Check profile pic
+    const hasProfilePic = !html.includes("instagram.com/static/images/anonymousUser");
 
-    // Parse stats
-    const postsCount = profileData.stats.length > 0 ? parseCount(profileData.stats[0]) : 0;
-    const followers = profileData.stats.length > 1 ? parseCount(profileData.stats[1]) : 0;
-    const following = profileData.stats.length > 2 ? parseCount(profileData.stats[2]) : 0;
-
-    return {
+    const profile: InstagramProfile = {
       handle,
-      name: profileData.name || handle,
-      bio: profileData.bio,
+      name: name || handle,
+      bio,
       postsCount,
       followers,
       following,
-      category: profileData.category,
-      highlights: profileData.highlights,
-      recentPosts: profileData.recentPosts,
-      profileUrl: url,
-      isVerified: profileData.isVerified,
-      hasProfilePic: profileData.hasProfilePic,
+      category,
+      highlights: highlights.slice(0, 10),
+      recentPosts: recentPosts.slice(0, 12),
+      profileUrl,
+      isVerified,
+      hasProfilePic,
     };
+
+    console.log("Scraped profile:", JSON.stringify({
+      handle: profile.handle,
+      name: profile.name,
+      posts: profile.postsCount,
+      followers: profile.followers,
+      following: profile.following,
+      bioLength: profile.bio.length,
+      highlights: profile.highlights.length,
+      recentPosts: profile.recentPosts.length,
+    }));
+
+    return profile;
   } catch (error) {
     console.error("Instagram scraping error:", error);
-
-    // Return partial data so the audit can still proceed
-    return {
-      handle,
-      name: handle,
-      bio: "",
-      postsCount: 0,
-      followers: 0,
-      following: 0,
-      category: "",
-      highlights: [],
-      recentPosts: [],
-      profileUrl: url,
-      isVerified: false,
-      hasProfilePic: false,
-    };
-  } finally {
-    if (browser) {
-      await browser.close();
-    }
+    return createEmptyProfile(handle, profileUrl);
   }
+}
+
+function createEmptyProfile(handle: string, profileUrl: string): InstagramProfile {
+  return {
+    handle,
+    name: handle,
+    bio: "",
+    postsCount: 0,
+    followers: 0,
+    following: 0,
+    category: "",
+    highlights: [],
+    recentPosts: [],
+    profileUrl,
+    isVerified: false,
+    hasProfilePic: false,
+  };
 }
