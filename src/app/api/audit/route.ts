@@ -33,17 +33,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check free audit quota (1 per user)
-    const existingAudits = await prisma.audit.count({
-      where: { userId: session.user.id },
+    // Check credits
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { credits: true },
     });
 
-    if (existingAudits >= 1) {
+    if (!user || user.credits <= 0) {
       return NextResponse.json(
-        { error: "Je hebt je gratis audit al gebruikt." },
+        { error: "Je hebt geen audit-tegoed meer. Koop extra audits in de shop." },
         { status: 403 }
       );
     }
+
+    // Deduct 1 credit
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: { credits: { decrement: 1 } },
+    });
 
     // Extract handle from URL
     const handle = instagramUrl
@@ -93,10 +100,11 @@ export async function GET(request: NextRequest) {
       if (userId !== session.user.id) {
         return NextResponse.json({ error: "Geen toegang." }, { status: 403 });
       }
-      const count = await prisma.audit.count({
-        where: { userId: session.user.id },
+      const user = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { credits: true },
       });
-      return NextResponse.json({ count });
+      return NextResponse.json({ credits: user?.credits ?? 0 });
     }
 
     if (id) {

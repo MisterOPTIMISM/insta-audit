@@ -20,7 +20,7 @@ export default function AuditPage() {
   const [usesReels, setUsesReels] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [auditsUsed, setAuditsUsed] = useState<number | null>(null);
+  const [credits, setCredits] = useState<number | null>(null);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -33,8 +33,8 @@ export default function AuditPage() {
       fetch(`/api/audit?userId=${session.user.id}`)
         .then((res) => res.json())
         .then((data) => {
-          if (data.count !== undefined) {
-            setAuditsUsed(data.count);
+          if (data.credits !== undefined) {
+            setCredits(data.credits);
           }
         })
         .catch(() => {});
@@ -57,9 +57,9 @@ export default function AuditPage() {
       return;
     }
 
-    if (auditsUsed !== null && auditsUsed >= 1) {
+    if (credits !== null && credits <= 0) {
       setError(
-        "Je hebt je gratis audit al gebruikt. Koop extra audits voor €9,90 per stuk in de shop."
+        "Je hebt geen audit-tegoed meer. Koop een bundel van 3 audits voor €9,95 in de shop."
       );
       return;
     }
@@ -131,7 +131,7 @@ export default function AuditPage() {
           <p className="mt-2 text-gray-500">
             Vul de gegevens van het Instagram profiel in.
           </p>
-          {auditsUsed !== null && auditsUsed >= 1 ? (
+          {credits !== null && credits <= 0 ? (
             <div
               className="mt-4 p-4 rounded-lg"
               style={{
@@ -142,10 +142,10 @@ export default function AuditPage() {
               }}
             >
               <p className="text-sm font-medium mb-2" style={{ color: "#E8724A" }}>
-                Je gratis audit is gebruikt
+                Geen audit-tegoed meer
               </p>
               <p className="text-xs text-gray-500 mb-3">
-                Wil je nog een profiel analyseren? Koop extra audits in de shop.
+                Koop een bundel van 3 audits en analyseer meer profielen.
               </p>
               <a
                 href="https://www.hansdemeyer.be/product/instagram-audit-instaaudit-by-hans-demeyer/"
@@ -154,12 +154,12 @@ export default function AuditPage() {
                 className="btn-primary text-sm"
                 style={{ padding: "0.5rem 1.25rem", fontSize: "0.8125rem" }}
               >
-                Koop een audit &mdash; &euro;9,90
+                3 audits &mdash; &euro;9,95
               </a>
             </div>
-          ) : auditsUsed !== null ? (
+          ) : credits !== null ? (
             <p className="mt-1 text-sm" style={{ color: "#22c55e" }}>
-              Je hebt nog 1 gratis audit
+              Je hebt nog {credits} audit{credits !== 1 ? "s" : ""} tegoed
             </p>
           ) : null}
         </div>
@@ -402,7 +402,7 @@ export default function AuditPage() {
 
             <button
               type="submit"
-              disabled={loading || (auditsUsed !== null && auditsUsed >= 1)}
+              disabled={loading || (credits !== null && credits <= 0)}
               className="btn-primary w-full justify-center text-base py-3"
               style={{
                 opacity:

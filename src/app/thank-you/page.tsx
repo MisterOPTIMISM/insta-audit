@@ -44,17 +44,17 @@ export default function ThankYouPage() {
               marginBottom: "0.25rem",
             }}
           >
-            &euro;9,90
+            &euro;9,95
           </div>
           <h2
             className="text-xl font-semibold mb-2"
             style={{ color: "#1a2b3f" }}
           >
-            Nog een profiel analyseren?
+            Nog meer profielen analyseren?
           </h2>
           <p className="text-gray-500 mb-4 text-sm">
-            Koop extra audits voor jezelf of voor klanten. Elk rapport bevat
-            een volledige analyse met score, tips en actieplan.
+            Koop een bundel van 3 audits voor jezelf of voor klanten.
+            Elk rapport bevat een volledige analyse met score, tips en actieplan.
           </p>
           <a
             href="https://www.hansdemeyer.be/product/instagram-audit-instaaudit-by-hans-demeyer/"
@@ -62,7 +62,7 @@ export default function ThankYouPage() {
             rel="noopener noreferrer"
             className="btn-primary"
           >
-            Koop een extra audit
+            3 audits kopen
           </a>
         </div>
 

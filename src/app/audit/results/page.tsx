@@ -219,8 +219,7 @@ function ResultsContent() {
               }}
             >
               Wil je nog een profiel analyseren of een follow-up audit doen?
-              Voor slechts &euro;9,90 per audit krijg je opnieuw een volledig
-              rapport.
+              Koop een bundel van 3 audits voor slechts &euro;9,95.
             </p>
             <div style={{ display: "flex", gap: "0.75rem", justifyContent: "center", flexWrap: "wrap" }}>
               <a
@@ -230,7 +229,7 @@ function ResultsContent() {
                 className="btn-primary"
                 style={{ fontSize: "1rem", padding: "0.75rem 2rem" }}
               >
-                Koop een audit &mdash; &euro;9,90
+                3 audits &mdash; &euro;9,95
               </a>
               <a
                 href="https://www.hansdemeyer.be"
