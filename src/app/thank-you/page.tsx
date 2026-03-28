@@ -26,16 +26,55 @@ export default function ThankYouPage() {
         <h1 className="text-4xl font-bold mb-4" style={{ color: "#1a2b3f" }}>
           Bedankt!
         </h1>
-        <p className="text-lg text-gray-500 mb-8">
-          Je Instagram audit is afgerond. We hopen dat de inzichten je helpen om
-          je profiel naar het volgende niveau te tillen!
+        <p className="text-lg text-gray-500 mb-10">
+          Je Instagram audit is afgerond. We hopen dat de inzichten je helpen
+          om je profiel naar het volgende niveau te tillen!
         </p>
 
-        <div className="card mb-8">
-          <h2 className="text-xl font-semibold mb-3" style={{ color: "#1a2b3f" }}>
-            Wil je nog meer resultaat?
+        {/* Extra Audits CTA */}
+        <div
+          className="card mb-6"
+          style={{ border: "2px solid #E8724A", padding: "2rem" }}
+        >
+          <div
+            style={{
+              fontSize: "2rem",
+              fontWeight: 800,
+              color: "#E8724A",
+              marginBottom: "0.25rem",
+            }}
+          >
+            &euro;9,90
+          </div>
+          <h2
+            className="text-xl font-semibold mb-2"
+            style={{ color: "#1a2b3f" }}
+          >
+            Nog een profiel analyseren?
           </h2>
-          <p className="text-gray-500 mb-4">
+          <p className="text-gray-500 mb-4 text-sm">
+            Koop extra audits voor jezelf of voor klanten. Elk rapport bevat
+            een volledige analyse met score, tips en actieplan.
+          </p>
+          <a
+            href="https://www.hansdemeyer.be/shop"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-primary"
+          >
+            Koop een extra audit
+          </a>
+        </div>
+
+        {/* Personal Session CTA */}
+        <div className="card mb-8" style={{ padding: "1.5rem" }}>
+          <h2
+            className="text-lg font-semibold mb-2"
+            style={{ color: "#1a2b3f" }}
+          >
+            Liever persoonlijke begeleiding?
+          </h2>
+          <p className="text-gray-500 mb-3 text-sm">
             Boek een 1-op-1 sessie met Hans Demeyer en krijg persoonlijk
             advies voor jouw Instagram strategie.
           </p>
@@ -43,43 +82,36 @@ export default function ThankYouPage() {
             href="https://www.hansdemeyer.be"
             target="_blank"
             rel="noopener noreferrer"
-            className="btn-primary"
+            className="btn-secondary text-sm"
           >
             Boek een sessie met Hans
           </a>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link href="/audit" className="btn-secondary">
-            Nog een audit starten
-          </Link>
+        <div className="flex items-center justify-center gap-4 text-sm">
           <Link
             href="/"
-            className="text-sm font-medium"
             style={{ color: "#6b7280" }}
           >
             Terug naar home
           </Link>
-        </div>
-
-        <div className="mt-12 flex items-center justify-center gap-6">
+          <span style={{ color: "#e5e7eb" }}>|</span>
           <a
             href="https://www.instagram.com/hans.demeyer/"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm font-medium"
             style={{ color: "#4A7FE8" }}
           >
             Volg Hans op Instagram
           </a>
+          <span style={{ color: "#e5e7eb" }}>|</span>
           <a
             href="https://www.linkedin.com/in/hansdemeyer"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm font-medium"
             style={{ color: "#4A7FE8" }}
           >
-            Connect op LinkedIn
+            LinkedIn
           </a>
         </div>
       </div>

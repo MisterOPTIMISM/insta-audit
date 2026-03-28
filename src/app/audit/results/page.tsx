@@ -174,18 +174,83 @@ function ResultsContent() {
           />
         )}
 
-        <div className="mt-8 text-center">
-          <p className="text-gray-500 mb-4">
-            Wil je meer uit je Instagram halen?
-          </p>
-          <a
-            href="https://www.hansdemeyer.be"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-primary"
+        {/* Upsell Section */}
+        <div
+          className="mt-10 rounded-2xl overflow-hidden"
+          style={{
+            background: "linear-gradient(135deg, #1a2b3f 0%, #2d4a6f 100%)",
+          }}
+        >
+          <div
+            style={{
+              padding: "2.5rem 2rem",
+              textAlign: "center",
+              maxWidth: "540px",
+              margin: "0 auto",
+            }}
           >
-            Boek een sessie met Hans
-          </a>
+            <p
+              style={{
+                fontSize: "0.75rem",
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                color: "rgba(255,255,255,0.5)",
+                marginBottom: "0.75rem",
+              }}
+            >
+              Meer audits nodig?
+            </p>
+            <h2
+              style={{
+                fontSize: "1.5rem",
+                fontWeight: 700,
+                color: "#ffffff",
+                marginBottom: "0.75rem",
+              }}
+            >
+              Koop extra Instagram Audits
+            </h2>
+            <p
+              style={{
+                color: "rgba(255,255,255,0.65)",
+                fontSize: "0.9375rem",
+                lineHeight: 1.6,
+                marginBottom: "1.5rem",
+              }}
+            >
+              Wil je nog een profiel analyseren of een follow-up audit doen?
+              Voor slechts &euro;9,90 per audit krijg je opnieuw een volledig
+              rapport.
+            </p>
+            <div style={{ display: "flex", gap: "0.75rem", justifyContent: "center", flexWrap: "wrap" }}>
+              <a
+                href="https://www.hansdemeyer.be/shop"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary"
+                style={{ fontSize: "1rem", padding: "0.75rem 2rem" }}
+              >
+                Koop een audit &mdash; &euro;9,90
+              </a>
+              <a
+                href="https://www.hansdemeyer.be"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  padding: "0.75rem 1.5rem",
+                  border: "1px solid rgba(255,255,255,0.25)",
+                  borderRadius: "0.5rem",
+                  color: "rgba(255,255,255,0.8)",
+                  fontSize: "0.9375rem",
+                  fontWeight: 500,
+                }}
+              >
+                Boek een sessie met Hans
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </div>

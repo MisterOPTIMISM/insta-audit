@@ -59,7 +59,7 @@ export default function AuditPage() {
 
     if (auditsUsed !== null && auditsUsed >= 1) {
       setError(
-        "Je hebt je gratis audit al gebruikt. Neem contact op met Hans voor meer audits."
+        "Je hebt je gratis audit al gebruikt. Koop extra audits voor €9,90 per stuk in de shop."
       );
       return;
     }
@@ -131,16 +131,37 @@ export default function AuditPage() {
           <p className="mt-2 text-gray-500">
             Vul de gegevens van het Instagram profiel in.
           </p>
-          {auditsUsed !== null && (
-            <p
-              className="mt-1 text-sm"
-              style={{ color: auditsUsed >= 1 ? "#ef4444" : "#22c55e" }}
+          {auditsUsed !== null && auditsUsed >= 1 ? (
+            <div
+              className="mt-4 p-4 rounded-lg"
+              style={{
+                backgroundColor: "rgba(232, 114, 74, 0.08)",
+                border: "1px solid rgba(232, 114, 74, 0.2)",
+                maxWidth: "400px",
+                margin: "1rem auto 0",
+              }}
             >
-              {auditsUsed >= 1
-                ? "Je gratis audit is gebruikt"
-                : "Je hebt nog 1 gratis audit"}
+              <p className="text-sm font-medium mb-2" style={{ color: "#E8724A" }}>
+                Je gratis audit is gebruikt
+              </p>
+              <p className="text-xs text-gray-500 mb-3">
+                Wil je nog een profiel analyseren? Koop extra audits in de shop.
+              </p>
+              <a
+                href="https://www.hansdemeyer.be/shop"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary text-sm"
+                style={{ padding: "0.5rem 1.25rem", fontSize: "0.8125rem" }}
+              >
+                Koop een audit &mdash; &euro;9,90
+              </a>
+            </div>
+          ) : auditsUsed !== null ? (
+            <p className="mt-1 text-sm" style={{ color: "#22c55e" }}>
+              Je hebt nog 1 gratis audit
             </p>
-          )}
+          ) : null}
         </div>
 
         <div className="card">
